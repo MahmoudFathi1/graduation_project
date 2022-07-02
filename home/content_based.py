@@ -1,9 +1,20 @@
 import pandas as pd
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
+import sqlite3
 
 
 class ContentBasedRecommender:
+
+    # def second_db(self, product):
+    #     db_connect = sqlite3.connect(r'F:\pycharm\second_db.sqlite3')
+    #     cr = db_connect.cursor()
+    #     cr.execute('INSERT INTO home_product VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?)', (product['product_id'], product['Name'],
+    #                 product['description'], product['Production_country'], product['image'], product['created_at'],
+    #                 product['user_id'], product['category_id'], product['price']))
+    #     db_connect.commit()
+    #     db_connect.close()
+
 
     def prepare(self):
         from .models import Product
@@ -32,6 +43,8 @@ class ContentBasedRecommender:
 
     def get_recommendation(self, machine_id):
         similarity, final_df = self.get_similarity()
+        if machine_id in final_df['id'].unique():
+            return 0
         machine_index = final_df[final_df['id'] == machine_id].index[0]
         distances = similarity[machine_index]
         machines_list = sorted(list(enumerate(distances)), reverse=True, key=lambda x: x[1])[1:6]

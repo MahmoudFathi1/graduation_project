@@ -49,16 +49,16 @@ class Recommended(models.Model):
 def recommend(sender, **kwargs):
     reco = Product.objects.all().values().last()
     x = ContentBasedRecommender()
-
     recommendation = x.get_recommendation(reco['product_id'])
+    if recommendation != 0:
+        reco_model = Recommended()
 
-    reco_model = Recommended()
+        reco_model.product_name_id = reco['product_id']
+        reco_model.recommend_id = reco['product_id']
 
-    reco_model.product_name_id = reco['product_id']
-    reco_model.recommend_id = reco['product_id']
+        reco_model.recomended_devices.set(recommendation)
+        reco_model.save(force_insert=True)
 
-    reco_model.recomended_devices.set(recommendation)
-    reco_model.save(force_insert=True)
        
 
 class OrderItem(models.Model):
